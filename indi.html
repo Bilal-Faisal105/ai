@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maabeta Kitchen — Professional Assistant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8B5CF6;
+            --primary-dark: #7C3AED;
+            --secondary: #EC4899;
+            --dark-bg: #0F172A;
+            --darker-bg: #0B1220;
+            --light-text: #F1F5F9;
+            --muted-text: #94A3B8;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+            --success: #10B981;
+            --user-msg-bg: #7C3AED;
+            --bot-msg-bg: #1E293B;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--darker-bg) 0%, var(--dark-bg) 100%);
+            color: var(--light-text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            height: 90vh;
+            max-height: 700px;
+        }
+
+        .header {
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tagline {
+            font-size: 14px;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .status {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .message {
+            max-width: 75%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            line-height: 1.5;
+            animation: fadeIn 0.3s ease;
+            position: relative;
+        }
+
+        .user-message {
+            align-self: flex-end;
+            background: var(--user-msg-bg);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .bot-message {
+            align-self: flex-start;
+            background: var(--bot-msg-bg);
+            border: 1px solid var(--border);
+            border-bottom-left-radius: 5px;
+        }
+
+        .message-time {
+            font-size: 10px;
+            opacity: 0.6;
+            margin-top: 4px;
+            text-align: right;
+        }
+
+        .quick-replies {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 15px 20px;
+            border-top: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .quick-reply {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border);
+            padding: 8px 15px;
+            border-radius: 18px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .quick-reply:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .input-area {
+            display: flex;
+            padding: 15px 20px;
+            gap: 12px;
+            background: rgba(0, 0, 0, 0.15);
+            border-top: 1px solid var(--border);
+        }
+
+        #user-input {
+            flex: 1;
+            padding: 12px 18px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.07);
+            color: white;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        #user-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.3);
+        }
+
+        #send-btn {
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            transition: all 0.2s ease;
+        }
+
+        #send-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(139, 92, 246, 0.3);
+        }
+
+        .suggestion {
+            font-size: 13px;
+            text-align: center;
+            padding: 10px;
+            color: var(--muted-text);
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .product-highlight {
+            background: rgba(139, 92, 246, 0.15);
+            padding: 12px 15px;
+            border-radius: 12px;
+            margin-top: 8px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            font-size: 14px;
+        }
+
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 12px 18px;
+            background: var(--bot-msg-bg);
+            border-radius: 18px;
+            align-self: flex-start;
+            border: 1px solid var(--border);
+            margin-bottom: 5px;
+            max-width: 90px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--muted-text);
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: typingAnimation 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: 0s; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes typingAnimation {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.6; }
+            30% { transform: translateY(-5px); opacity: 1; }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                height: 95vh;
+                border-radius: 15px;
+            }
+            
+            .message {
+                max-width: 85%;
+            }
+            
+            .header {
+                padding: 15px;
+            }
+            
+            .logo {
+                font-size: 22px;
+            }
+            
+            .status {
+                top: 15px;
+                right: 15px;
+            }
+            
+            .quick-replies {
+                padding: 12px;
+            }
+            
+            .quick-reply {
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+        }
+
+        /* Scrollbar styling */
+        .chat-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-container::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .chat-container::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        .chat-container::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-birthday-cake"></i>
+                Maabeta Kitchen
+            </div>
+            <div class="tagline">Home-baked cakes and treats made with love</div>
+            <div class="status">
+                <span class="status-dot"></span>
+                Online
+            </div>
+        </div>
+        
+        <div class="chat-container" id="chat-log">
+            <div class="message bot-message">
+                Hello! 👋 I'm the Maabeta Kitchen assistant. How can I help you today?
+                <div class="message-time">Just now</div>
+            </div>
+            <div class="message bot-message">
+                You can ask me about:
+                <br>• Our products and menu
+                <br>• Pricing and delivery options
+                <br>• How to place an order
+                <br>• Custom cake options
+                <div class="message-time">Just now</div>
+            </div>
+        </div>
+        
+        <div class="quick-replies">
+            <div class="quick-reply" data-query="What cakes do you offer?">
+                <i class="fas fa-utensils"></i> Cake Menu
+            </div>
+            <div class="quick-reply" data-query="How much does a cake cost?">
+                <i class="fas fa-tag"></i> Pricing
+            </div>
+            <div class="quick-reply" data-query="How can I order?">
+                <i class="fas fa-shopping-cart"></i> Order Process
+            </div>
+            <div class="quick-reply" data-query="Do you do custom cakes?">
+                <i class="fas fa-paint-brush"></i> Custom Cakes
+            </div>
+        </div>
+        
+        <div class="suggestion">
+            Type your message or click a quick question above
+        </div>
+        
+        <div class="input-area">
+            <input type="text" id="user-input" placeholder="Type your message here...">
+            <button id="send-btn">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatLog = document.getElementById('chat-log');
+            const userInput = document.getElementById('user-input');
+            const sendBtn = document.getElementById('send-btn');
+            const quickReplies = document.querySelectorAll('.quick-reply');
+            
+            // Enhanced knowledge base
+            const knowledge = {
+                greeting: "Hello! Welcome to Maabeta Kitchen. 🎂 How can I assist you today?",
+                about: "Maabeta Kitchen is a home-based bakery specializing in custom cakes, cupcakes, and desserts. We use high-quality ingredients and create everything with love!",
+                products: "We offer a variety of delicious treats:<br><div class='product-highlight'><strong>🎂 Custom Cakes</strong> - Birthday, wedding, anniversary, and themed cakes<br><strong>🧁 Cupcakes</strong> - Chocolate, vanilla, red velvet with various frostings<br><strong>🍪 Cookies & Brownies</strong> - Classic and premium options<br><strong>🍮 Dessert Jars</strong> - Layered desserts in convenient jars<br><strong>🎉 Seasonal Specials</strong> - Holiday-themed treats</div>",
+                prices: "Our pricing:<br>• <strong>Basic cakes</strong> start at PKR 1200<br>• <strong>Custom designed cakes</strong>: PKR 1500-3000+<br>• <strong>Cupcakes</strong>: PKR 150 each (minimum order of 6)<br>• <strong>Brownies</strong>: PKR 800 per dozen<br><br>Custom quotes are provided based on design complexity and ingredients.",
+                order: "To place an order:<br>1. Browse our gallery at <a href='https://maabetakitchen.netlify.app' target='_blank' style='color: #8B5CF6; text-decoration: none; font-weight: 500;'>maabetakitchen.netlify.app</a><br>2. WhatsApp us with your choice at <a href='https://wa.me/923001234567' style='color: #8B5CF6; text-decoration: none; font-weight: 500;'>+92 300 1234567</a><br>3. We'll confirm availability and delivery details<br>4. Payment options: Cash on delivery or bank transfer",
+                delivery: "We deliver throughout Karachi within 1-3 days. Delivery charges apply based on location (typically PKR 100-200). Free delivery for orders above PKR 2500 in selected areas.",
+                custom: "Yes! We specialize in custom cakes for all occasions. Share your theme, color scheme, and any reference images, and we'll create a unique design for you. Custom orders require 3-5 days notice.",
+                thanks: "You're welcome! Let me know if you need anything else. 🎂",
+                default: "I'm sorry, I didn't understand that. Could you please rephrase? You can ask about our products, pricing, how to order, or delivery information."
+            };
+            
+            // Add initial bot message with slight delay for natural feel
+            setTimeout(() => {
+                addMessage("Hi there! I'm the Maabeta Kitchen assistant. How can I help you today?", 'bot');
+            }, 1000);
+            
+            // Send message function
+            function sendMessage() {
+                const message = userInput.value.trim();
+                if (message) {
+                    addMessage(message, 'user');
+                    userInput.value = '';
+                    
+                    // Show typing indicator
+                    showTypingIndicator();
+                    
+                    // Simulate typing delay
+                    setTimeout(() => {
+                        // Remove typing indicator
+                        removeTypingIndicator();
+                        
+                        const response = generateResponse(message);
+                        addMessage(response, 'bot');
+                    }, 1500);
+                }
+            }
+            
+            // Add message to chat
+            function addMessage(text, sender) {
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('message');
+                messageElement.classList.add(sender + '-message');
+                messageElement.innerHTML = text;
+                
+                // Add timestamp
+                const timeElement = document.createElement('div');
+                timeElement.classList.add('message-time');
+                timeElement.textContent = getCurrentTime();
+                messageElement.appendChild(timeElement);
+                
+                chatLog.appendChild(messageElement);
+                chatLog.scrollTop = chatLog.scrollHeight;
+            }
+            
+            // Show typing indicator
+            function showTypingIndicator() {
+                const typingElement = document.createElement('div');
+                typingElement.classList.add('typing-indicator');
+                typingElement.id = 'typing-indicator';
+                
+                for (let i = 0; i < 3; i++) {
+                    const dot = document.createElement('div');
+                    dot.classList.add('typing-dot');
+                    typingElement.appendChild(dot);
+                }
+                
+                chatLog.appendChild(typingElement);
+                chatLog.scrollTop = chatLog.scrollHeight;
+            }
+            
+            // Remove typing indicator
+            function removeTypingIndicator() {
+                const typingElement = document.getElementById('typing-indicator');
+                if (typingElement) {
+                    typingElement.remove();
+                }
+            }
+            
+            // Get current time for message timestamp
+            function getCurrentTime() {
+                const now = new Date();
+                return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+            
+            // Generate bot response
+            function generateResponse(input) {
+                const text = input.toLowerCase();
+                
+                if (text.includes('hi') || text.includes('hello') || text.includes('hey')) {
+                    return knowledge.greeting;
+                } else if (text.includes('about') || text.includes('who') || text.includes('what is')) {
+                    return knowledge.about;
+                } else if (text.includes('product') || text.includes('menu') || text.includes('offer') || text.includes('cake') || text.includes('what do you sell')) {
+                    return knowledge.products;
+                } else if (text.includes('price') || text.includes('cost') || text.includes('how much')) {
+                    return knowledge.prices;
+                } else if (text.includes('order') || text.includes('buy') || text.includes('purchase') || text.includes('how to order')) {
+                    return knowledge.order;
+                } else if (text.includes('deliver') || text.includes('ship') || text.includes('area') || text.includes('location')) {
+                    return knowledge.delivery;
+                } else if (text.includes('custom') || text.includes('design') || text.includes('special') || text.includes('personalized')) {
+                    return knowledge.custom;
+                } else if (text.includes('thank') || text.includes('thanks')) {
+                    return knowledge.thanks;
+                } else {
+                    return knowledge.default;
+                }
+            }
+            
+            // Event listeners
+            sendBtn.addEventListener('click', sendMessage);
+            
+            userInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+            
+            quickReplies.forEach(reply => {
+                reply.addEventListener('click', function() {
+                    const query = this.getAttribute('data-query');
+                    addMessage(query, 'user');
+                    
+                    // Show typing indicator
+                    showTypingIndicator();
+                    
+                    // Simulate typing delay
+                    setTimeout(() => {
+                        // Remove typing indicator
+                        removeTypingIndicator();
+                        
+                        const response = generateResponse(query);
+                        addMessage(response, 'bot');
+                    }, 1500);
+                });
+            });
+            
+            // Focus input field on load
+            userInput.focus();
+        });
+    </script>
+</body>
+</html>
